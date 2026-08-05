@@ -1,5 +1,9 @@
+from application import Application
+
+
 def main():
-    print("Medical AI Imaging Project Started")
+    app = Application()
+    app.run()
 
 
 if __name__ == "__main__":
