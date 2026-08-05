@@ -1,9 +1,11 @@
-from application import Application
+from input.image_loader import ImageLoader
 
 
-def main():
-    app = Application()
-    app.run()
+def main() -> None:
+    loader = ImageLoader()
+    image = loader.load("data/images/test.jpg")
+
+    print(image.shape)
 
 
 if __name__ == "__main__":
