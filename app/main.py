@@ -1,11 +1,14 @@
 from input.image_loader import ImageLoader
+from input.image_viewer import ImageViewer
 
 
 def main() -> None:
     loader = ImageLoader()
+    viewer = ImageViewer()
+
     image = loader.load("data/images/test.jpg")
 
-    print(image.shape)
+    viewer.show(image)
 
 
 if __name__ == "__main__":
