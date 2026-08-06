@@ -1,14 +1,9 @@
-from input.image_loader import ImageLoader
-from input.image_viewer import ImageViewer
+from application import Application
 
 
 def main() -> None:
-    loader = ImageLoader()
-    viewer = ImageViewer()
-
-    image = loader.load("data/images/test.jpg")
-
-    viewer.show(image)
+    app = Application()
+    app.run()
 
 
 if __name__ == "__main__":

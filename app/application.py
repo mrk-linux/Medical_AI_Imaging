@@ -1,11 +1,17 @@
-from config import Config
+from input.image_loader import ImageLoader
+from input.image_viewer import ImageViewer
 
 
 class Application:
     """Main application controller."""
 
     def __init__(self) -> None:
-        self.config = Config()
+        self.loader = ImageLoader()
+        self.viewer = ImageViewer()
 
     def run(self) -> None:
-        print(f"{self.config.APP_NAME} v{self.config.VERSION}")
+        image = self.loader.load(
+            "data/images/chest_xray_001.jpg"
+        )
+
+        self.viewer.show(image)
