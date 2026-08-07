@@ -1,6 +1,7 @@
 from input.image_loader import ImageLoader
 from input.image_viewer import ImageViewer
 from preprocessing.image_preprocessor import ImagePreprocessor
+from preprocessing.grayscale import GrayscaleConverter
 
 
 class Application:
@@ -10,9 +11,11 @@ class Application:
         self.loader = ImageLoader()
         self.viewer = ImageViewer()
         self.preprocessor = ImagePreprocessor()
+        self.grayscale_converter = GrayscaleConverter()
+
     def run(self) -> None:
         image = self.loader.load(
-            "data/images/chest_xray_001.jpg"
+            "data/images/chest_xray_002.jpg"
         )
 
         image = self.preprocessor.resize(
@@ -20,5 +23,7 @@ class Application:
             width=512,
             height=512,
         )
+
+        image = self.grayscale_converter.convert(image)
 
         self.viewer.show(image)
