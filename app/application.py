@@ -2,6 +2,7 @@ from input.image_loader import ImageLoader
 from input.image_viewer import ImageViewer
 from preprocessing.image_preprocessor import ImagePreprocessor
 from preprocessing.grayscale import GrayscaleConverter
+from preprocessing.normalizer import ImageNormalizer
 
 
 class Application:
@@ -12,6 +13,7 @@ class Application:
         self.viewer = ImageViewer()
         self.preprocessor = ImagePreprocessor()
         self.grayscale_converter = GrayscaleConverter()
+        self.normalizer = ImageNormalizer()
 
     def run(self) -> None:
         image = self.loader.load(
