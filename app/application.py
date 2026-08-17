@@ -4,6 +4,7 @@ from preprocessing.image_preprocessor import ImagePreprocessor
 from preprocessing.grayscale import GrayscaleConverter
 from preprocessing.normalizer import ImageNormalizer
 from preprocessing.histogram_equalizer import HistogramEqualizer
+from preprocessing.noise_reducer import NoiseReducer
 
 class Application:
     """Main application controller."""
@@ -15,6 +16,7 @@ class Application:
         self.grayscale_converter = GrayscaleConverter()
         self.normalizer = ImageNormalizer()
         self.histogram_equalizer = HistogramEqualizer()
+        self.noise_reducer = NoiseReducer()
 
     def run(self) -> None:
         image = self.loader.load(
@@ -22,12 +24,12 @@ class Application:
         )
 
         image = self.preprocessor.resize(
-            image,
-            width=512,
-            height=512,
-        )
+    image,
+    width=512,
+    height=512,
+)
 
         image = self.grayscale_converter.convert(image)
+        image = self.noise_reducer.reduce(image)
         image = self.histogram_equalizer.equalize(image)
-
         self.viewer.show(image)
