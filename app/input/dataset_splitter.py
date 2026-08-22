@@ -11,9 +11,12 @@ class DatasetSplitter:
         source_directory: str,
         validation_directory: str,
         validation_ratio: float = 0.2,
+        random_seed: int = 42,
     ) -> None:
         source_path = Path(source_directory)
         validation_path = Path(validation_directory)
+
+        rng = random.Random(random_seed)
 
         for label_directory in source_path.iterdir():
             if not label_directory.is_dir():
@@ -25,14 +28,18 @@ class DatasetSplitter:
                 if image.is_file()
             ]
 
-            random.shuffle(images)
+            rng.shuffle(images)
 
-            validation_count = int(len(images) * validation_ratio)
+            validation_count = int(
+                len(images) * validation_ratio
+            )
+
             validation_images = images[:validation_count]
 
             target_label_directory = (
                 validation_path / label_directory.name
             )
+
             target_label_directory.mkdir(
                 parents=True,
                 exist_ok=True,
