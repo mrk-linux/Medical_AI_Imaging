@@ -1,6 +1,6 @@
 from pathlib import Path
 import torch
-from models.cnn_model import CNNModel
+from app.models.cnn_model import CNNModel
 
 
 class ModelSaver:

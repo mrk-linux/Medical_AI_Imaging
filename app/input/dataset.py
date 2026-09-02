@@ -1,6 +1,6 @@
-from preprocessing.image_preprocessor import ImagePreprocessor
-from preprocessing.grayscale import GrayscaleConverter
-from preprocessing.normalizer import ImageNormalizer
+from app.preprocessing.image_preprocessor import ImagePreprocessor
+from app.preprocessing.grayscale import GrayscaleConverter
+from app.preprocessing.normalizer import ImageNormalizer
 
 
 class Dataset:

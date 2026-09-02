@@ -1,4 +1,4 @@
-from input.dataset_splitter import DatasetSplitter
+from app.input.dataset_splitter import DatasetSplitter
 
 
 def main() -> None:

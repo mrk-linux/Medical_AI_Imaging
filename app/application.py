@@ -1,10 +1,10 @@
-from input.image_loader import ImageLoader
-from input.image_viewer import ImageViewer
-from preprocessing.image_preprocessor import ImagePreprocessor
-from preprocessing.grayscale import GrayscaleConverter
-from preprocessing.normalizer import ImageNormalizer
-from preprocessing.histogram_equalizer import HistogramEqualizer
-from preprocessing.noise_reducer import NoiseReducer
+from app.input.image_loader import ImageLoader
+from app.input.image_viewer import ImageViewer
+from app.preprocessing.image_preprocessor import ImagePreprocessor
+from app.preprocessing.grayscale import GrayscaleConverter
+from app.preprocessing.normalizer import ImageNormalizer
+from app.preprocessing.histogram_equalizer import HistogramEqualizer
+from app.preprocessing.noise_reducer import NoiseReducer
 
 class Application:
     """Main application controller."""
