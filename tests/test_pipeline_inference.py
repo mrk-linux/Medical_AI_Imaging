@@ -1,4 +1,4 @@
-from app.input.image_preprocessor import ImagePreprocessor
+from app.input.inference_preprocessor import ImagePreprocessor
 from app.models.cnn_model import CNNModel
 from app.models.inference import Inference
 

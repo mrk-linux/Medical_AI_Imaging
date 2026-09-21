@@ -1,5 +1,5 @@
 import torch
-from app.input.image_preprocessor import ImagePreprocessor
+from app.input.inference_preprocessor import ImagePreprocessor
 
 
 def main() -> None:
