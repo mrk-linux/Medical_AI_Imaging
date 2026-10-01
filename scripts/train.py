@@ -7,52 +7,75 @@ from app.models.trainer import Trainer
 from app.models.model_saver import ModelSaver
 
 
-DATASET_PATH = "data/raw/chest_xray/train"
+TRAIN_DATASET_PATH = "data/raw/chest_xray/train"
+VALIDATION_DATASET_PATH = "data/raw/chest_xray/validation"
+TEST_DATASET_PATH = "data/raw/chest_xray/test"
 MODEL_PATH = "trained_models/cnn_model.pth"
 
 
-def main() -> None:
+def create_data_loader(path: str, shuffle: bool):
+    """Create a PyTorch DataLoader from dataset directory."""
 
-    # Load raw dataset
     loader = DatasetLoader()
-    samples = loader.load(DATASET_PATH)
-
+    samples = loader.load(path)
     if not samples:
-        raise RuntimeError("No dataset samples were loaded.")
+        raise RuntimeError(f"No dataset samples found: {path}")
 
-    print(f"Loaded samples: {len(samples)}")
-
-    # Prepare dataset
+    print(f"Loaded samples from {path}: {len(samples)}")
     dataset = Dataset()
+
     prepared_samples = dataset.prepare(samples)
 
-    # Create PyTorch dataset
     pytorch_dataset = PyTorchDataset(prepared_samples)
 
-    # Create DataLoader
     data_loader_creator = PyTorchDataLoader(
         pytorch_dataset,
         batch_size=32,
+        shuffle=shuffle,
+    )
+
+    return data_loader_creator.create()
+
+
+def main() -> None:
+    """Run training, validation and test evaluation."""
+
+    train_loader = create_data_loader(
+        TRAIN_DATASET_PATH,
         shuffle=True,
     )
-    data_loader = data_loader_creator.create()
 
-    # Create model and trainer
+    validation_loader = create_data_loader(
+        VALIDATION_DATASET_PATH,
+        shuffle=False,
+    )
+
+    test_loader = create_data_loader(
+        TEST_DATASET_PATH,
+        shuffle=False,
+    )
+
     model = CNNModel()
     trainer = Trainer(model)
 
-    # Train model
-    loss_history = trainer.train(data_loader,epochs=1,)
+    loss_history = trainer.train(
+        train_loader,
+        epochs=1,
+    )
+
     print(f"Training loss: {loss_history}")
 
-    # Validate model
-    validation_loss, accuracy = trainer.validate(data_loader)
-    print(f"Validation loss: {validation_loss:.4f}")
-    print(f"Validation accuracy: {accuracy:.4f}")
+    validation_loss, validation_accuracy = trainer.validate(
+        validation_loader
+    )
 
-    # Save trained model
+    print(f"Validation loss: {validation_loss:.4f}")
+    print(f"Validation accuracy: {validation_accuracy:.4f}")
+    test_loss, test_accuracy = trainer.validate(test_loader)
+    print(f"Test loss: {test_loss:.4f}")
+    print(f"Test accuracy: {test_accuracy:.4f}")
     saver = ModelSaver()
-    saver.save(model, MODEL_PATH)
+    saver.save(model,MODEL_PATH,)
     print(f"Model saved: {MODEL_PATH}")
 
 
