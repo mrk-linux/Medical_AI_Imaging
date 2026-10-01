@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from app.input.dataset_loader import DatasetLoader
 from app.input.dataset import Dataset
 from app.input.pytorch_dataset import PyTorchDataset
@@ -35,25 +37,41 @@ def main() -> None:
         batch_size=32,
         shuffle=True,
     )
+
     data_loader = data_loader_creator.create()
 
-    # Create model and trainer
+    # Create model and load previous checkpoint
     model = CNNModel()
+    saver = ModelSaver()
+
+    if Path(MODEL_PATH).exists():
+        model = saver.load(model, MODEL_PATH)
+        print(f"Loaded checkpoint: {MODEL_PATH}")
+
+    # Create trainer
     trainer = Trainer(model)
 
     # Train model
-    loss_history = trainer.train(data_loader,epochs=1,)
+    loss_history, accuracy_history = trainer.train(
+        data_loader,
+        epochs=1,
+    )
+
     print(f"Training loss: {loss_history}")
+    print(f"Training accuracy: {accuracy_history}")
 
     # Validate model
     validation_loss, accuracy = trainer.validate(data_loader)
+
     print(f"Validation loss: {validation_loss:.4f}")
     print(f"Validation accuracy: {accuracy:.4f}")
 
-    # Save trained model
-    saver = ModelSaver()
-    saver.save(model, MODEL_PATH)
-    print(f"Model saved: {MODEL_PATH}")
+    # Save best model checkpoint
+    if trainer.is_best_model(accuracy):
+        saver.save(model, MODEL_PATH)
+        print(f"Best model saved: {MODEL_PATH}")
+    else:
+        print("Current model is not better than previous checkpoint.")
 
 
 if __name__ == "__main__":
