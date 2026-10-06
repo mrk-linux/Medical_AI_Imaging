@@ -9,20 +9,22 @@ from app.models.trainer import Trainer
 from app.models.model_saver import ModelSaver
 
 
-DATASET_PATH = "data/raw/chest_xray/train"
+TRAIN_DATASET_PATH = "data/raw/chest_xray/train"
+VALIDATION_DATASET_PATH = "data/raw/chest_xray/validation"
+TEST_DATASET_PATH = "data/raw/chest_xray/test"
 MODEL_PATH = "trained_models/cnn_model.pth"
 
 
-def main() -> None:
+def create_data_loader(path: str, shuffle: bool):
 
-    # Load raw dataset
+    # Load dataset samples
     loader = DatasetLoader()
-    samples = loader.load(DATASET_PATH)
+    samples = loader.load(path)
 
     if not samples:
-        raise RuntimeError("No dataset samples were loaded.")
+        raise RuntimeError(f"No dataset samples found: {path}")
 
-    print(f"Loaded samples: {len(samples)}")
+    print(f"Loaded samples from {path}: {len(samples)}")
 
     # Prepare dataset
     dataset = Dataset()
@@ -35,12 +37,31 @@ def main() -> None:
     data_loader_creator = PyTorchDataLoader(
         pytorch_dataset,
         batch_size=32,
+        shuffle=shuffle,
+    )
+
+    return data_loader_creator.create()
+
+
+def main() -> None:
+
+    # Create train, validation and test loaders
+    train_loader = create_data_loader(
+        TRAIN_DATASET_PATH,
         shuffle=True,
     )
 
-    data_loader = data_loader_creator.create()
+    validation_loader = create_data_loader(
+        VALIDATION_DATASET_PATH,
+        shuffle=False,
+    )
 
-    # Create model and load previous checkpoint
+    test_loader = create_data_loader(
+        TEST_DATASET_PATH,
+        shuffle=False,
+    )
+
+    # Create model and load checkpoint
     model = CNNModel()
     saver = ModelSaver()
 
@@ -53,7 +74,7 @@ def main() -> None:
 
     # Train model
     loss_history, accuracy_history = trainer.train(
-        data_loader,
+        train_loader,
         epochs=1,
     )
 
@@ -61,13 +82,21 @@ def main() -> None:
     print(f"Training accuracy: {accuracy_history}")
 
     # Validate model
-    validation_loss, accuracy = trainer.validate(data_loader)
+    validation_loss, validation_accuracy = trainer.validate(
+        validation_loader
+    )
 
     print(f"Validation loss: {validation_loss:.4f}")
-    print(f"Validation accuracy: {accuracy:.4f}")
+    print(f"Validation accuracy: {validation_accuracy:.4f}")
+
+    # Test model
+    test_loss, test_accuracy = trainer.validate(test_loader)
+
+    print(f"Test loss: {test_loss:.4f}")
+    print(f"Test accuracy: {test_accuracy:.4f}")
 
     # Save best model checkpoint
-    if trainer.is_best_model(accuracy):
+    if trainer.is_best_model(validation_accuracy):
         saver.save(model, MODEL_PATH)
         print(f"Best model saved: {MODEL_PATH}")
     else:
