@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 class Inference:
@@ -10,19 +11,44 @@ class Inference:
         1: "PNEUMONIA",
     }
 
-    def __init__(self,model: nn.Module) -> None:
+    def __init__(
+        self,
+        model: nn.Module,
+    ) -> None:
         self.model = model
 
         # Switch model to evaluation mode for prediction.
         self.model.eval()
 
-    def predict(self,image: torch.Tensor) -> str:
+    def predict(
+        self,
+        image: torch.Tensor,
+    ) -> tuple[str, float]:
+        """Predict class and confidence."""
 
-        # Disable gradient calculation because we only predict.
         with torch.no_grad():
 
             output = self.model(image)
-            # Select the class with the highest score.
-            prediction = torch.argmax(output, dim=1).item()
 
-        return self.LABELS[prediction]
+            probabilities = F.softmax(
+                output,
+                dim=1,
+            )
+
+            confidence, prediction = torch.max(
+                probabilities,
+                dim=1,
+            )
+
+        label = self.LABELS[
+            prediction.item()
+        ]
+
+        confidence_percentage = (
+            confidence.item() * 100
+        )
+
+        return (
+            label,
+            confidence_percentage,
+        )
