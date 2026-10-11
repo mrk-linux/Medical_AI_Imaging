@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (
     QProgressBar,
     QFrame,
     QGraphicsDropShadowEffect,
+    QHBoxLayout,
 )
 from PySide6.QtCore import Qt
 
@@ -37,65 +38,62 @@ class ResultWidget(QWidget):
         )
 
         shadow = QGraphicsDropShadowEffect()
-
         shadow.setBlurRadius(20)
         shadow.setOffset(0, 5)
 
-        card.setGraphicsEffect(
-            shadow
-        )
+        card.setGraphicsEffect(shadow)
 
         return card
 
-    def create_label_pair(
-        self,
-        english_text: str,
-        persian_text: str,
-    ):
-        """Create bilingual label pair."""
+    def create_indicator(self) -> QLabel:
+        """Create status indicator."""
 
-        layout = QVBoxLayout()
+        indicator = QLabel()
 
-        english_label = QLabel(
-            english_text
+        indicator.setFixedSize(
+            18,
+            18,
         )
 
-        persian_label = QLabel(
-            persian_text
+        indicator.setStyleSheet(
+            """
+            QLabel {
+                background-color: #22c55e;
+                border-radius: 9px;
+            }
+            """
         )
 
-        english_label.setAlignment(
-            Qt.AlignCenter
-        )
-
-        persian_label.setAlignment(
-            Qt.AlignCenter
-        )
-
-        layout.addWidget(
-            english_label
-        )
-
-        layout.addWidget(
-            persian_label
-        )
-
-        return layout
+        return indicator
 
     def create_ui(self) -> None:
         """Create result display."""
 
         main_layout = QVBoxLayout()
-
         main_layout.setSpacing(20)
 
-        # Prediction Card
         prediction_card = self.create_card()
 
         prediction_layout = QVBoxLayout()
 
+        title_layout = QHBoxLayout()
+
+        self.prediction_indicator = self.create_indicator()
+
         self.prediction_title = QLabel(
             "Prediction Result"
+        )
+
+        title_layout.addWidget(
+            self.prediction_indicator
+        )
+
+        title_layout.addWidget(
+            self.prediction_title
+        )
+
+        title_layout.setAlignment(
+            Qt.AlignCenter
         )
 
         self.prediction_translation = QLabel(
@@ -116,12 +114,10 @@ class ResultWidget(QWidget):
             self.prediction_value,
             self.prediction_value_fa,
         ]:
-            label.setAlignment(
-                Qt.AlignCenter
-            )
+            label.setAlignment(Qt.AlignCenter)
 
-        prediction_layout.addWidget(
-            self.prediction_title
+        prediction_layout.addLayout(
+            title_layout
         )
 
         prediction_layout.addWidget(
@@ -140,7 +136,6 @@ class ResultWidget(QWidget):
             prediction_layout
         )
 
-        # Confidence Card
         confidence_card = self.create_card()
 
         confidence_layout = QVBoxLayout()
@@ -160,9 +155,7 @@ class ResultWidget(QWidget):
             100,
         )
 
-        self.confidence_bar.setValue(
-            0
-        )
+        self.confidence_bar.setValue(0)
 
         self.confidence_bar.setMinimumHeight(
             22
@@ -175,14 +168,6 @@ class ResultWidget(QWidget):
         self.confidence_bar.setTextVisible(
             True
         )
-
-        for label in [
-            self.confidence_title,
-            self.confidence_translation,
-        ]:
-            label.setAlignment(
-                Qt.AlignCenter
-            )
 
         confidence_layout.addWidget(
             self.confidence_title
@@ -200,7 +185,6 @@ class ResultWidget(QWidget):
             confidence_layout
         )
 
-        # Status Card
         status_card = self.create_card()
 
         status_layout = QVBoxLayout()
@@ -220,16 +204,6 @@ class ResultWidget(QWidget):
         self.status_value_fa = QLabel(
             "بدون تحلیل"
         )
-
-        for label in [
-            self.status_title,
-            self.status_translation,
-            self.status_value,
-            self.status_value_fa,
-        ]:
-            label.setAlignment(
-                Qt.AlignCenter
-            )
 
         status_layout.addWidget(
             self.status_title
@@ -267,6 +241,71 @@ class ResultWidget(QWidget):
             main_layout
         )
 
+    def update_indicator(
+        self,
+        color: str,
+    ) -> None:
+        """Update indicator color."""
+
+        self.prediction_indicator.setStyleSheet(
+            f"""
+            QLabel {{
+                background-color: {color};
+                border-radius: 9px;
+            }}
+            """
+        )
+
+    def show_loading(self) -> None:
+        """Show analysis loading state."""
+
+        self.update_indicator(
+            "#facc15"
+        )
+
+        self.prediction_title.setText(
+            "Analyzing..."
+        )
+
+        self.prediction_translation.setText(
+            "در حال تحلیل تصویر"
+        )
+
+        self.prediction_value.setText(
+            "Please wait"
+        )
+
+        self.prediction_value_fa.setText(
+            "لطفاً منتظر بمانید"
+        )
+
+    def show_error(
+        self,
+        message_en: str,
+        message_fa: str,
+    ) -> None:
+        """Display error message."""
+
+        self.update_indicator(
+            "#ef4444"
+        )
+
+        self.prediction_title.setText(
+            "Error"
+        )
+
+        self.prediction_translation.setText(
+            "خطا"
+        )
+
+        self.prediction_value.setText(
+            message_en
+        )
+
+        self.prediction_value_fa.setText(
+            message_fa
+        )
+
     def update_result(
         self,
         prediction: str,
@@ -279,6 +318,14 @@ class ResultWidget(QWidget):
             "نامشخص",
         )
 
+        self.prediction_title.setText(
+            "Prediction Result"
+        )
+
+        self.prediction_translation.setText(
+            "نتیجه تشخیص"
+        )
+
         self.prediction_value.setText(
             prediction
         )
@@ -287,37 +334,21 @@ class ResultWidget(QWidget):
             translated_prediction
         )
 
+        if prediction == "NORMAL":
+            self.update_indicator("#22c55e")
+
+        elif prediction == "PNEUMONIA":
+            self.update_indicator("#f97316")
+
+        else:
+            self.update_indicator("#ef4444")
+
         self.confidence_bar.setValue(
             int(confidence)
         )
 
         self.confidence_bar.setFormat(
             f"{confidence:.2f}%"
-        )
-
-        # Change progress bar color based on confidence level
-        if confidence < 50:
-            color = "#ef4444"
-        elif confidence < 80:
-            color = "#f97316"
-        else:
-            color = "#22c55e"
-
-        self.confidence_bar.setStyleSheet(
-            f"""
-            QProgressBar {{
-                border: 2px solid #cbd5e1;
-                border-radius: 8px;
-                background-color: #f8fafc;
-                text-align: center;
-                font-weight: bold;
-            }}
-
-            QProgressBar::chunk {{
-                background-color: {color};
-                border-radius: 8px;
-            }}
-            """
         )
 
         self.status_value.setText(
