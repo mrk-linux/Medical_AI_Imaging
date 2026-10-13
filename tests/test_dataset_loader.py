@@ -3,10 +3,7 @@ from app.input.dataset_loader import DatasetLoader
 
 def main() -> None:
     loader = DatasetLoader()
-
-    dataset = loader.load(
-        "data/raw/chest_xray/train"
-    )
+    dataset = loader.load("data/raw/chest_xray/train")
 
     print(f"Loaded samples: {len(dataset)}")
 

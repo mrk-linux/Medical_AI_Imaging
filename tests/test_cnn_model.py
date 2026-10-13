@@ -12,34 +12,13 @@ def main() -> None:
     target = torch.tensor([0])
 
     output = model(sample)
-
-    loss = trainer.loss_function(
-        output,
-        target,
-    )
-
-    first_parameter_before = (
-        next(model.parameters())
-        .detach()
-        .clone()
-    )
-
+    loss = trainer.loss_function(output,target,)
+    first_parameter_before = (next(model.parameters()).detach().clone())
     trainer.optimizer.zero_grad()
-
     loss.backward()
-
     trainer.optimizer.step()
-
-    first_parameter_after = (
-        next(model.parameters())
-        .detach()
-        .clone()
-    )
-
-    parameters_changed = not torch.equal(
-        first_parameter_before,
-        first_parameter_after,
-    )
+    first_parameter_after = (next(model.parameters()).detach().clone())
+    parameters_changed = not torch.equal(first_parameter_before,first_parameter_after)
 
     print(f"Loss: {loss.item():.4f}")
     print(f"Parameters changed: {parameters_changed}")

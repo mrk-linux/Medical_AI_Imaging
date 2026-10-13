@@ -4,11 +4,7 @@ from app.input.inference_preprocessor import ImagePreprocessor
 
 def main() -> None:
     preprocessor = ImagePreprocessor()
-
-    image_path = (
-        "data/raw/chest_xray/validation/NORMAL/IM-0128-0001.jpeg"
-    )
-
+    image_path = ("data/raw/chest_xray/validation/NORMAL/IM-0128-0001.jpeg")
     tensor = preprocessor.process(image_path)
 
     print(f"Tensor type: {type(tensor)}")

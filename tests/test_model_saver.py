@@ -20,11 +20,7 @@ def main() -> None:
     saver.load(loaded_model, path)
 
     output_after = loaded_model(sample)
-
-    outputs_match = torch.equal(
-        output_before,
-        output_after,
-    )
+    outputs_match = torch.equal(output_before,output_after)
 
     print(f"Model saved: {path}")
     print(f"Outputs match: {outputs_match}")

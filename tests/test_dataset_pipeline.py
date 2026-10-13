@@ -6,18 +6,12 @@ def main() -> None:
     loader = DatasetLoader()
     dataset = Dataset()
 
-    samples = loader.load(
-        "data/raw/chest_xray/train"
-    )
+    samples = loader.load("data/raw/chest_xray/train")
 
-    prepared_samples = dataset.prepare(
-        samples[:5]
-    )
+    prepared_samples = dataset.prepare( samples[:5])
 
     print(f"Loaded samples: {len(samples)}")
-    print(
-        f"Prepared samples: {len(prepared_samples)}"
-    )
+    print(f"Prepared samples: {len(prepared_samples)}")
 
     image, label = prepared_samples[0]
 

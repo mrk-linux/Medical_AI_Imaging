@@ -1,6 +1,5 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
-
 from app.input.dataset_splitter import DatasetSplitter
 
 
@@ -47,15 +46,8 @@ def main() -> None:
             list((validation_path / "PNEUMONIA").iterdir())
         )
 
-        print(
-            f"NORMAL -> train: {normal_train}, "
-            f"validation: {normal_validation}"
-        )
-
-        print(
-            f"PNEUMONIA -> train: {pneumonia_train}, "
-            f"validation: {pneumonia_validation}"
-        )
+        print(f"NORMAL -> train: {normal_train}, "f"validation: {normal_validation}")
+        print(f"PNEUMONIA -> train: {pneumonia_train}, "f"validation: {pneumonia_validation}")
 
 
 if __name__ == "__main__":

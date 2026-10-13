@@ -10,9 +10,7 @@ def main() -> None:
     # Load real dataset samples
     loader = DatasetLoader()
 
-    samples = loader.load(
-        "data/raw/chest_xray/train"
-    )
+    samples = loader.load("data/raw/chest_xray/train")
 
     if not samples:
         raise RuntimeError("No dataset samples were loaded.")
@@ -20,9 +18,7 @@ def main() -> None:
     # Prepare one real sample
     dataset = Dataset()
 
-    prepared_samples = dataset.prepare(
-        samples[:1]
-    )
+    prepared_samples = dataset.prepare(samples[:1])
 
     image, label = prepared_samples[0]
 
@@ -46,10 +42,7 @@ def main() -> None:
     target = torch.tensor([label])
 
     # Calculate loss
-    loss = trainer.loss_function(
-        output,
-        target,
-    )
+    loss = trainer.loss_function(output,target,)
 
     # Backpropagation
     trainer.optimizer.zero_grad()

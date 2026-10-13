@@ -22,18 +22,9 @@ def main() -> None:
     model = CNNModel()
     trainer = Trainer(model)
 
-    first_parameter_before = (
-        next(model.parameters())
-        .detach()
-        .clone()
-    )
-
+    first_parameter_before = (next(model.parameters()).detach().clone())
     loss_history = trainer.train(data_loader,epochs=1)
-
-    first_parameter_after = (
-        next(model.parameters()).detach().clone()
-    )
-
+    first_parameter_after = (next(model.parameters()).detach().clone())
     parameters_changed = not torch.equal(first_parameter_before,first_parameter_after)
 
     print(f"Loss history: {loss_history}")
