@@ -14,21 +14,10 @@ class InferenceController:
 
         self.inference = Inference(model)
 
-    def predict(
-        self,
-        image_path: str,
-    ) -> tuple[str, float]:
+    def predict(self,image_path: str) -> tuple[str, float]:
         """Run prediction for image."""
 
-        image_tensor = self.preprocessor.process(
-            image_path
-        )
+        image_tensor = self.preprocessor.process(image_path)
+        prediction, confidence = self.inference.predict(image_tensor)
 
-        prediction, confidence = self.inference.predict(
-            image_tensor
-        )
-
-        return (
-            prediction,
-            confidence,
-        )
+        return (prediction,confidence)
